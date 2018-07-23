@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Col, Container, Row, Card, CardBody, Button, Form, FormGroup, Input, Label } from "reactstrap";
 import AwardCard from './component/AwardCard.js';
+import KudosForm from './component/KudosForm.js';
 
 class App extends Component {
 
@@ -50,19 +51,24 @@ class App extends Component {
         {
           id: 1,
           title: "Best Boss Award!",
-          comment: "Thanks for always looking out for us."
+          comment: "Thanks for always looking out for us.",
+          sender: "Fabian",
+          receiver: "Leon"
         },
         {
           id: 2,
           title: "Longest Commute Award!",
-          comment: "I can't believe Leslie makes it to work as often as she does."
+          comment: "I can't believe Laura makes it to work as often as she does.",
+          sender: "Archit",
+          receiver: "Laura"
         },
         {
           id: 3,
           title: "Most likely to nap at work!",
-          comment: "Maybe you need more coffee."
+          comment: "Maybe you need more coffee.",
+          sender: "Gobi",
+          receiver: "Owen"
         }
-
       ]
     }
   }
@@ -85,29 +91,16 @@ class App extends Component {
             </Card>
           </Col>
           <Col md="12" lg="9">
-            <AwardCard id="Badge Name" title="Heading" comment="Conversion stealth influencer business-to-business entrepreneur hypotheses investor customer deployment metrics learning curve direct mailing long tail mass market. Pitch iteration stock android business-to-consumer bandwidth seed round user experience paradigm shift channels equity pivot. Metrics partner network validation responsive web design first mover advantage backing research &amp; development market mass market innovator sales infrastructure." />
+            <AwardCard id="Badge Name" receiver="Archit" title="Heading" comment="Conversion stealth influencer business-to-business entrepreneur hypotheses investor customer deployment metrics learning curve direct mailing long tail mass market. Pitch iteration stock android business-to-consumer bandwidth seed round user experience paradigm shift channels equity pivot. Metrics partner network validation responsive web design first mover advantage backing research &amp; development market mass market innovator sales infrastructure." />
           </Col>
         </Row>
         <Row>
           <Col md="12">
-            <Form>
-              <FormGroup>
-                <Label for="giveKudos">Give Kudos to</Label>
-                <Input type="select" name="select" id="giveKudos">
-                  {this.state.users.map(e => <option>{e.name} 💯</option>)}
-                </Input>
-              </FormGroup>
-              <FormGroup>
-                <Input type="text" placeholder="Kudos Title" />
-              </FormGroup>
-              <FormGroup>
-                <Input type="textarea" placeholder="Kudos Text" />
-              </FormGroup>
-            </Form>
+            <KudosForm option={this.state.users.map(e => <option>{e.name} 💯</option>)} />
           </Col>
         </Row>
         <hr />
-        {this.state.awards.map(e => <AwardCard id={e.id} title={e.title} comment={e.comment} />)}
+        {this.state.awards.map(e => <AwardCard id={e.id} receiver={e.receiver} title={e.title} comment={e.comment} />)}
       </Container>
     );
   }
