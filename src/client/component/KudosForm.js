@@ -22,9 +22,9 @@ const KudosForm = props => (
         <FormGroup>
             <Input type="textarea" placeholder="Kudos Text" onChange={props.updateKudosText} value={props.kudosText} />
         </FormGroup>
-        <FormGroup>
+        {/* <FormGroup>
             <Button onClick={props.postKudos} color="success">Submit</Button>
-        </FormGroup>
+        </FormGroup> */}
     </Form>
 
 )

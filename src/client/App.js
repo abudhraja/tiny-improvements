@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Col, Container, Row, Card, CardBody, Button } from "reactstrap";
+import { Col, Container, Row, Card, CardBody, Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import AwardCard from './component/AwardCard.js';
 import KudosForm from './component/KudosForm.js';
 import axios from "axios";
@@ -14,8 +14,16 @@ class App extends Component {
       kudosReceiver: "",
       kudosSender: "",
       users: [],
-      awards: []
+      awards: [],
+      modal: false
     }
+    this.toggle = this.toggle.bind(this);
+  }
+
+  toggle = () => {
+    this.setState({
+      modal: !this.state.modal
+    });
   }
 
   componentDidMount = () => {
@@ -49,6 +57,7 @@ class App extends Component {
         awards: response.data
       })
     });
+    this.toggle()
   }
 
   updateKudosText = (event) => {
@@ -80,19 +89,28 @@ class App extends Component {
           <Col md="12" lg="3">
             <Card>
               <CardBody className="mx-auto">
-                <Button color="success">Give Kudos</Button>
+                <Button color="success" onClick={this.toggle}>Give Kudos</Button>
               </CardBody>
             </Card>
           </Col>
           <Col md="12" lg="9">
-            <KudosForm
-              receiveroption={this.state.users.map((e, index) => <option key={index}>{e.name} 💯</option>)}
-              senderoption={this.state.users.map((e, index) => <option key={index}>{e.name} 💯</option>)}
-              postKudos={this.postKudos}
-              updateKudosText={this.updateKudosText}
-              updateKudosTitle={this.updateKudosTitle}
-              updateKudosReceiver={this.updateKudosReceiver}
-              updateKudosSender={this.updateKudosSender} />
+            <Modal isOpen={this.state.modal} toggle={this.toggle} className="kudosModal">
+              <ModalHeader toggle={this.toggle}>Give Kudos!</ModalHeader>
+              <ModalBody>
+                <KudosForm
+                  receiveroption={this.state.users.map((e, index) => <option key={index}>{e.name} 💯</option>)}
+                  senderoption={this.state.users.map((e, index) => <option key={index}>{e.name} 💯</option>)}
+                  // postKudos={this.postKudos}
+                  updateKudosText={this.updateKudosText}
+                  updateKudosTitle={this.updateKudosTitle}
+                  updateKudosReceiver={this.updateKudosReceiver}
+                  updateKudosSender={this.updateKudosSender} />
+              </ModalBody>
+              <ModalFooter>
+                <Button color="primary" onClick={this.postKudos}>Submit</Button>
+                <Button color="secondary" onClick={this.toggle}>Close</Button>
+              </ModalFooter>
+            </Modal>
           </Col>
         </Row>
         <Row>
