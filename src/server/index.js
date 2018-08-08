@@ -1,61 +1,52 @@
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
+const salesForce = require("./config/salesforce");
 
 const PORT = process.env.PORT || 8000;
 const app = express();
 
-const users = [
-    {
-        userId: 45089,
-        name: "Owen",
-        position: "Captian of the Breakroom"
-    },
-    {
-        userId: 223,
-        name: "Brooke",
-        position: "Winner of All Dance-Offs"
-    },
-    {
-        userId: 6582,
-        name: "Gobi",
-        position: "King of Mid-Day Naps"
-    }
-];
-const awards = [
-    {
-        id: 1,
-        title: "Best Boss Award!",
-        comment: "Thanks for always looking out for us.",
-        sender: "Fabian",
-        receiver: "Leon"
-    },
-    {
-        id: 2,
-        title: "Longest Commute Award!",
-        comment: "I can't believe Laura makes it to work as often as she does.",
-        sender: "Archit",
-        receiver: "Laura"
-    },
-    {
-        id: 3,
-        title: "Most likely to nap at work!",
-        comment: "Maybe you need more coffee.",
-        sender: "Gobi",
-        receiver: "Owen"
-    }
-];
+const awards = [];
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use(express.static("public"));
 
-app.get("/api/users", (req, res) => res.json(users));
-app.get("/api/awards", (req, res) => res.json(awards));
+app.get("/api/users", (req, res) => {
+    salesForce.query(`SELECT id, Name, email__c, password__c FROM Tiny_Improvements_User__c ORDER BY Name ASC`).then((data) => {
+        res.json(data.records.map(record => record._fields))
+    });
+});
+
+app.get("/api/kudos", (req, res) => {
+    salesForce.query(`SELECT id, Name, Comment__c, Receiver__c, Sender__c, Receiver__r.Name, Sender__r.Name FROM Kudos__c WHERE Receiver__r.Name != NULL AND Sender__r.Name != NULL AND (NOT (Name LIKE '%test%' OR Comment__c LIKE '%test%')) ORDER BY LastModifiedDate DESC`).then((data) => {
+        res.json(data.records.map(record => record._fields))
+    });
+});
+
+app.get("/api/mykudos", (req, res) => {
+    salesForce.query(`SELECT id, Name, Comment__c, Receiver__c, Sender__c, Receiver__r.Name, Sender__r.Name FROM Kudos__c WHERE Receiver__r.Name = 'Archit' ORDER BY LastModifiedDate DESC`).then((data) => {
+        res.json(data.records.map(record => record._fields))
+    });
+});
+
+app.get("/api/negativekudos/:id", (req, res) => {
+    salesForce.query(`SELECT id, Name, Comment__c, Receiver__c, Sender__c, Receiver__r.Name, Sender__r.Name FROM Kudos__c WHERE NOT (Comment__c LIKE ` + `'%` + req.params.id + `%' OR Name LIKE ` + `'%` + req.params.id + `%') ORDER BY LastModifiedDate DESC`).then((data) => {
+        res.json(data.records.map(record => record._fields))
+    });
+});
+
 app.post("/api/kudos", (req, res) => {
-    console.log(req.body);
-    awards.push(req.body);
-    res.json(awards);
+    salesForce.createKudos(req.body).then(() => {
+        res.json({ success: true })
+    });
+});
+
+app.get("/api/filter/:id", (req, res) => {
+    salesForce.query(`SELECT Id, Name, Comment__c, Receiver__r.Name, Sender__r.Name FROM Kudos__c WHERE Comment__c LIKE ` + `'%` + req.params.id + `%' OR Name LIKE ` + `'%` + req.params.id + `%' ORDER BY LastModifiedDate DESC`).then((data) => {
+        res.json(data.records.map(record => record._fields))
+    });
 });
 
 app.listen(PORT, function () {

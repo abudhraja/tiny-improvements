@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Form, FormGroup, Input, Label } from "reactstrap";
+import { Form, FormGroup, Input, Label } from "reactstrap";
 
 const KudosForm = props => (
 
@@ -22,9 +22,6 @@ const KudosForm = props => (
         <FormGroup>
             <Input type="textarea" placeholder="Kudos Text" onChange={props.updateKudosText} value={props.kudosText} />
         </FormGroup>
-        {/* <FormGroup>
-            <Button onClick={props.postKudos} color="success">Submit</Button>
-        </FormGroup> */}
     </Form>
 
 )
